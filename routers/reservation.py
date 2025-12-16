@@ -142,3 +142,12 @@ def get_reservations(
         results = [r for r in results if r["reserver_id"] == reserver_id]
 
     return results
+
+@router.delete("/{reservation_id}")
+def cancel_meeting_reservation(reservation_id: int):
+    for i, r in enumerate(MEETING_RESERVATIONS):
+        if r["id"] == reservation_id:
+            MEETING_RESERVATIONS.pop(i)
+            return {"message": "회의실 예약이 취소되었습니다"}
+
+    raise HTTPException(status_code=404, detail="회의실 예약을 찾을 수 없습니다")
