@@ -6,13 +6,14 @@ from schemas.laptop_reservation import (
     LaptopReservationResponse
 )
 from datetime import datetime
+from storage.reservation import MEETING_RESERVATIONS, LAPTOP_RESERVATIONS
+from utils.time_overlap import is_time_overlap
 
 router = APIRouter(
     prefix="/api/laptop-reservations",
     tags=["Laptop Room"]
 )
 
-LAPTOP_RESERVATIONS = []
 LAPTOP_SEQ = 1
 
 
@@ -52,6 +53,21 @@ def create_laptop_reservation(req: LaptopReservationCreate):
     if used + 2 > 4:
         raise HTTPException(status_code=400, detail="열람실은 하루 최대 4시간 이용 가능합니다")
 
+    # 🔥 회의실 예약과 시간대 겹침 검사
+    for r in MEETING_RESERVATIONS:
+        if r["reserver_id"] == req.reserver_id and r["date"] == req.date:
+            if is_time_overlap(
+                start,
+                end,
+                r["start_time"],
+                r["end_time"]
+            ):
+                raise HTTPException(
+                    status_code=409,
+                    detail="같은 시간에 회의실과 열람실을 동시에 예약할 수 없습니다"
+                )
+
+
     reservation = {
         "id": LAPTOP_SEQ,
         "seat_number": req.seat_number,
@@ -65,3 +81,27 @@ def create_laptop_reservation(req: LaptopReservationCreate):
     LAPTOP_SEQ += 1
 
     return reservation
+
+from typing import Optional
+
+@router.get("/")
+def get_laptop_reservations(
+    date: Optional[str] = None,
+    seat_number: Optional[int] = None,
+    reserver_id: Optional[str] = None,
+):
+    """
+    열람실 좌석 예약 조회
+    """
+    results = LAPTOP_RESERVATIONS
+
+    if date:
+        results = [r for r in results if r["date"] == date]
+
+    if seat_number:
+        results = [r for r in results if r["seat_number"] == seat_number]
+
+    if reserver_id:
+        results = [r for r in results if r["reserver_id"] == reserver_id]
+
+    return results

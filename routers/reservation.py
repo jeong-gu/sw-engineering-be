@@ -3,18 +3,19 @@
 from fastapi import APIRouter, HTTPException
 from schemas.reservation import ReservationCreate, ReservationResponse
 from datetime import datetime, timedelta
+from storage.reservation import MEETING_RESERVATIONS, LAPTOP_RESERVATIONS
+from utils.time_overlap import is_time_overlap
 
 router = APIRouter(
     prefix="/api/reservations",
     tags=["Reservations"]
 )
 
-RESERVATIONS = []
 RESERVATION_SEQ = 1
 
 
 def is_time_overlap(room_id, date, start, end):
-    for r in RESERVATIONS:
+    for r in MEETING_RESERVATIONS:
         if r["room_id"] == room_id and r["date"] == date:
             if start < r["end_time"] and end > r["start_time"]:
                 return True
@@ -36,7 +37,7 @@ def calculate_user_usage(reserver_id: str, date_str: str):
     daily = 0
     weekly = 0
 
-    for r in RESERVATIONS:
+    for r in MEETING_RESERVATIONS:
         if r["reserver_id"] != reserver_id:
             continue
 
@@ -85,6 +86,20 @@ def create_reservation(req: ReservationCreate):
             status_code=400,
             detail="회의실은 주간 최대 5시간까지 이용 가능합니다"
         )
+        
+    # 🔥 열람실 예약과 시간대 겹침 검사
+    for r in LAPTOP_RESERVATIONS:
+        if r["reserver_id"] == reserver_id and r["date"] == req.date:
+            if is_time_overlap(
+                req.start_time,
+                req.end_time,
+                r["start_time"],
+                r["end_time"]
+            ):
+                raise HTTPException(
+                    status_code=409,
+                    detail="같은 시간에 열람실과 회의실을 동시에 예약할 수 없습니다"
+                )
 
     reservation = {
         "id": RESERVATION_SEQ,
@@ -96,7 +111,34 @@ def create_reservation(req: ReservationCreate):
         "reserver_id": reserver_id,
     }
 
-    RESERVATIONS.append(reservation)
+    MEETING_RESERVATIONS.append(reservation)
     RESERVATION_SEQ += 1
 
     return reservation
+
+from typing import Optional
+
+@router.get("/")
+def get_reservations(
+    date: Optional[str] = None,
+    room_id: Optional[int] = None,
+    reserver_id: Optional[str] = None,
+):
+    """
+    회의실 예약 조회
+    - date: YYYY-MM-DD
+    - room_id: 회의실 번호
+    - reserver_id: 예약자 학번
+    """
+    results = MEETING_RESERVATIONS
+
+    if date:
+        results = [r for r in results if r["date"] == date]
+
+    if room_id:
+        results = [r for r in results if r["room_id"] == room_id]
+
+    if reserver_id:
+        results = [r for r in results if r["reserver_id"] == reserver_id]
+
+    return results
