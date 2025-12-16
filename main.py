@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import room,reservation,laptop
+from db.init_db import init_db
+
+init_db()
+
 
 app = FastAPI(
     title="Meeting Room Reservation API",
