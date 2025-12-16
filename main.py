@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import room
+from routers import room,reservation
 
 app = FastAPI(
     title="Meeting Room Reservation API",
@@ -8,6 +8,7 @@ app = FastAPI(
 )
 
 app.include_router(room.router)
+app.include_router(reservation.router)
 
 @app.get("/")
 def root():
