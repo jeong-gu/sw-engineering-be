@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from routers import room,reservation
+from fastapi.middleware.cors import CORSMiddleware
+from routers import room,reservation,laptop
 
 app = FastAPI(
     title="Meeting Room Reservation API",
@@ -7,6 +8,15 @@ app = FastAPI(
     version="0.1.0"
 )
 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(laptop.router)
 app.include_router(room.router)
 app.include_router(reservation.router)
 
