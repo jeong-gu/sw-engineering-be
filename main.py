@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import room,reservation,laptop
+from routers import reservation,laptop
 from db.init_db import init_db
 
 init_db()
@@ -21,7 +21,6 @@ app.add_middleware(
 )
 
 app.include_router(laptop.router)
-app.include_router(room.router)
 app.include_router(reservation.router)
 
 @app.get("/")
