@@ -6,8 +6,8 @@ from typing import List
 class ReservationCreate(BaseModel):
     room_id: int
     date: str              # YYYY-MM-DD
-    start_time: int        # hour (9~17)
-    end_time: int          # hour (10~18)
+    start_time: int        # hour
+    end_time: int          # hour
     participants: List[str] = Field(..., min_items=3, max_items=8)
 
 
@@ -18,3 +18,4 @@ class ReservationResponse(BaseModel):
     start_time: int
     end_time: int
     participants: List[str]
+    reserver_id: str       # 예약자 학번
