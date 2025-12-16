@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String,JSON
 from db.base import Base
 
 class MeetingReservation(Base):
@@ -9,3 +9,5 @@ class MeetingReservation(Base):
     date = Column(String, index=True)
     start_time = Column(Integer)
     end_time = Column(Integer)
+    reserver_id=Column(String)
+    participants = Column(JSON) 
