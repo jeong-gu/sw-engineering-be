@@ -16,3 +16,8 @@ class LaptopReservationResponse(BaseModel):
     start_time: int
     end_time: int
     reserver_id: str
+
+class LaptopReservationRandomCreate(BaseModel):
+    date: str            # YYYY-MM-DD
+    start_time: int      # 9 ~ 16
+    reserver_id: str
