@@ -26,9 +26,19 @@ def create_reservation(
     req: ReservationCreate,
     db: Session = Depends(get_db),
 ):
+    
     reserver_id = req.participants[0]
     duration = req.end_time - req.start_time
 
+    participants = [p for p in req.participants if p and p.strip()]
+
+    # ⛔ 참여자 학번 중복 검사
+    if len(participants) != len(set(participants)):
+        raise HTTPException(
+            status_code=400,
+            detail="참여자 학번에 중복이 있습니다"
+        )
+        
     # 운영 시간
     if req.start_time < 9 or req.end_time > 18:
         raise HTTPException(status_code=400, detail="운영 시간은 09~18시입니다")
