@@ -45,6 +45,22 @@ def create_reservation(
 
     if duration != 1:
         raise HTTPException(status_code=400, detail="회의실은 1시간 단위로 예약 가능합니다")
+    
+    # 📅 예약 가능 날짜 검사 (오늘 ~ 7일 이내)
+    today = datetime.today().date()
+    max_date = today + timedelta(days=6)
+
+    try:
+        req_date = datetime.strptime(req.date, "%Y-%m-%d").date()
+    except ValueError:
+        raise HTTPException(status_code=400, detail="날짜 형식이 올바르지 않습니다")
+
+    if req_date < today or req_date > max_date:
+        raise HTTPException(
+            status_code=400,
+            detail="예약은 오늘부터 7일 이내만 가능합니다"
+        )
+
 
     # ⛔ 시간 중복 검사 (회의실)
     conflict = db.query(MeetingReservation).filter(
