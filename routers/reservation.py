@@ -124,9 +124,7 @@ def get_reservations(
             detail="reserver_id is required"
         )
 
-    query = db.query(MeetingReservation).filter(
-        MeetingReservation.reserver_id == reserver_id
-    )
+    query = db.query(MeetingReservation)
 
     if date:
         query = query.filter(MeetingReservation.date == date)
@@ -134,7 +132,15 @@ def get_reservations(
     if room_id:
         query = query.filter(MeetingReservation.room_id == room_id)
 
-    return query.all()
+    reservations = query.all()
+
+    # ⭐ 핵심: 참여자 기준 필터
+    result = [
+        r for r in reservations
+        if r.participants and reserver_id in r.participants
+    ]
+
+    return result
 
 @router.delete("/{reservation_id}")
 def cancel_meeting_reservation(
