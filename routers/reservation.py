@@ -118,7 +118,15 @@ def get_reservations(
     reserver_id: Optional[str] = None,
     db: Session = Depends(get_db),
 ):
-    query = db.query(MeetingReservation)
+    if not reserver_id:
+        raise HTTPException(
+            status_code=400,
+            detail="reserver_id is required"
+        )
+
+    query = db.query(MeetingReservation).filter(
+        MeetingReservation.reserver_id == reserver_id
+    )
 
     if date:
         query = query.filter(MeetingReservation.date == date)
