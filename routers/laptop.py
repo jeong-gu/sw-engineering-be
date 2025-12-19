@@ -85,6 +85,23 @@ def create_laptop_reservation(
 
     return reservation
 
+@router.get("/availability")
+def get_laptop_reservations_availability(
+    date: Optional[str] = None,
+    seat_number: Optional[int] = None,
+    reserver_id: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    query = db.query(LaptopReservation)
+
+    if date:
+        query = query.filter(LaptopReservation.date == date)
+
+    if seat_number:
+        query = query.filter(LaptopReservation.seat_number == seat_number)
+
+    return query.all()
+
 @router.get("/")
 def get_laptop_reservations(
     date: Optional[str] = None,

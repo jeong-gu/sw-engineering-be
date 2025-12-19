@@ -118,7 +118,7 @@ def create_reservation(
         start_time=req.start_time,
         end_time=req.end_time,
         reserver_id=reserver_id,
-        participants=req.participants,
+        participants=participants,
     )
 
     db.add(reservation)
@@ -126,6 +126,23 @@ def create_reservation(
     db.refresh(reservation)
 
     return reservation
+
+@router.get("/availability")
+def get_reservations_availability(
+    date: Optional[str] = None,
+    room_id: Optional[int] = None,
+    reserver_id: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    query=db.query(MeetingReservation)
+
+    if date:
+        query = query.filter(MeetingReservation.date == date)
+
+    if room_id:
+        query = query.filter(MeetingReservation.room_id == room_id)
+
+    return query.all()
 
 @router.get("/")
 def get_reservations(
