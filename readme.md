@@ -1,43 +1,30 @@
-# 로컬로 코드 가져오기
+# 25-2 소프트웨어공학 최종 프로젝트
 
-## 1. git 설치
+## Build & Run Guide
+본 프로젝트는 FastAPI 기반 백엔드 서버로,
+로컬 개발 환경에서 실행 가능하도록 구성되어 있습니다.
+별도의 빌드 서버 없이 가상환경으로 **requirements.txt**를 통해 의존성을 관리합니다.
 
-## 2. 로컬로 코드 가져오기
-```
+FE Repository: https://github.com/jeong-gu/sw-engineering-final
+### Backend Requirements
+- Python: 3.10 이상
+- pip
+
+### Backend Installation
+```bash
 git clone https://github.com/jeong-gu/sw-engineering-be
 cd sw-engineering-be
-```
 
-## 3. 가상 환경 세팅 (venv 설치 후 )
-```
-python -m venv venv
-```
-
-## 4. 의존성 패치
-```
+python -m venv venv         #가상환경 설정
+source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
-
-## 5. 서버 시작
-```
+### Run Backend Server
+```bash
 uvicorn main:app --reload
 ```
 
-# 커밋 이동 방법
-
-## 1. 커밋 해시 확인
-```
-git log --oneline
-```
-
-## 2. 위 명령어로 해당 커밋 시점으로 코드 후 코드 테스트 진행
-```
-git checkout {커밋 해시}
-```
-
-## 3. 위 명령어로 main branch로 이동 (최신 버전으로 이동)
-```
-git checkout main
-```
-
-## 4. 1 ~ 3 반복 
+### Notes
+- 서버 실행 시 SQLite 데이터베이스가 자동으로 생성됩니다.
+- 기본 서버 주소: http://127.0.0.1:8000
+- API 문서(Swagger UI): http://127.0.0.1:8000/docs
