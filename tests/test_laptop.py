@@ -73,6 +73,20 @@ def test_laptop_reservation_fail_conflict_seat():
     assert response.status_code == 409
     assert "이미 예약된 좌석" in response.json()["detail"]
 
+#좌석 번호 범위(1~70) 초과
+def test_laptop_seat_number_out_of_range_requirement():
+    response = client.post(
+        "/api/laptop-reservations/",
+        json={
+            "seat_number": 999,   
+            "date": "2025-04-02",
+            "start_time": 9,
+            "reserver_id": "202017832"
+        }
+    )
+
+    assert response.status_code == 400
+
 #하루 최대 4시간 초과
 def test_laptop_reservation_fail_daily_limit():
     # 첫 예약 (2시간)
@@ -136,7 +150,7 @@ def test_laptop_same_user_same_time_two_seats_allowed():
     )
 
     assert res1.status_code == 200
-    assert res2.status_code == 200
+    assert res2.status_code == 409
 
 #메모리 저장 성공
 def test_laptop_reservation_stored_in_memory():
@@ -188,3 +202,33 @@ def test_laptop_reservation_persisted_in_database():
     assert reservation is not None
     assert reservation.start_time == 9
     assert reservation.end_time == 11
+    
+#예약 취소
+def test_laptop_reservation_cancel_success():
+    # 예약 생성
+    response = client.post(
+        "/api/laptop-reservations/",
+        json={
+            "seat_number": 60,
+            "date": "2025-06-01",
+            "start_time": 9,
+            "reserver_id": "cancel_test_user"
+        }
+    )
+    assert response.status_code == 200
+    reservation_id = response.json()["id"]
+
+    # 예약 취소
+    delete_response = client.delete(
+        f"/api/laptop-reservations/{reservation_id}"
+    )
+    assert delete_response.status_code == 200
+
+    # 다시 조회 → 없어야 함
+    get_response = client.get(
+        "/api/laptop-reservations/",
+        params={"reserver_id": "cancel_test_user"}
+    )
+    data = get_response.json()
+
+    assert all(r["id"] != reservation_id for r in data)
