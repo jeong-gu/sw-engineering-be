@@ -137,18 +137,19 @@ def test_create_reservation_daily_limit_400(client):
     assert "하루 최대 2시간" in r.json()["detail"]
 
 
-# 7. 주간 최대 5시간 제한 초과면 400 (조건 충족 불가 시 skip)
+# 7. 주간 최대 5시간 제한 초과면 400
 def test_create_reservation_weekly_limit_400(client):
     today = date.today()
-    remaining_in_week = 7 - today.weekday()  # 월0~일6
 
-    if remaining_in_week < 4:
-        pytest.skip("7일 예약 제한 + 주 경계 때문에 주간 제한(6시간) 케이스 구성 불가")
+    if today.weekday() <= 3:
+        base = today
+    else:
+        base = today + timedelta(days=(7 - today.weekday()))
 
-    d0 = today.isoformat()
-    d1 = (today + timedelta(days=1)).isoformat()
-    d2 = (today + timedelta(days=2)).isoformat()
-    d3 = (today + timedelta(days=3)).isoformat()
+    d0 = base.isoformat()
+    d1 = (base + timedelta(days=1)).isoformat()
+    d2 = (base + timedelta(days=2)).isoformat()
+    d3 = (base + timedelta(days=3)).isoformat()
 
     participants = participants_ok("501000")
 
@@ -181,7 +182,6 @@ def test_create_reservation_weekly_limit_400(client):
     )
     assert r.status_code == 400
     assert "주간 최대 5시간" in r.json()["detail"]
-
 
 # 8. 예약 취소 성공
 def test_delete_reservation_success_200(client):
