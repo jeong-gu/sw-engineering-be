@@ -117,20 +117,21 @@ def test_create_reservation_laptop_conflict_409(client, db_session):
 # 6. 하루 최대 2시간 제한 초과면 400
 def test_create_reservation_daily_limit_400(client):
     d = today_str()
+    participants = participants_ok("401000")
 
     assert client.post(
         "/api/reservations/",
-        json=payload(date_s=d, start=9, end=10, participants=participants_ok("401000")),
+        json=payload(date_s=d, start=9, end=10, participants=participants),
     ).status_code == 200
 
     assert client.post(
         "/api/reservations/",
-        json=payload(date_s=d, start=10, end=11, participants=participants_ok("401001")),
+        json=payload(date_s=d, start=10, end=11, participants=participants),
     ).status_code == 200
 
     r = client.post(
         "/api/reservations/",
-        json=payload(date_s=d, start=11, end=12, participants=participants_ok("401002")),
+        json=payload(date_s=d, start=11, end=12, participants=participants),
     )
     assert r.status_code == 400
     assert "하루 최대 2시간" in r.json()["detail"]
@@ -149,32 +150,34 @@ def test_create_reservation_weekly_limit_400(client):
     d2 = (today + timedelta(days=2)).isoformat()
     d3 = (today + timedelta(days=3)).isoformat()
 
+    participants = participants_ok("501000")
+
     assert client.post(
         "/api/reservations/",
-        json=payload(date_s=d0, start=9, end=10, participants=participants_ok("501000")),
+        json=payload(date_s=d0, start=9, end=10, participants=participants),
     ).status_code == 200
     assert client.post(
         "/api/reservations/",
-        json=payload(date_s=d0, start=10, end=11, participants=participants_ok("501001")),
+        json=payload(date_s=d0, start=10, end=11, participants=participants),
     ).status_code == 200
 
     assert client.post(
         "/api/reservations/",
-        json=payload(date_s=d1, start=9, end=10, participants=participants_ok("501002")),
+        json=payload(date_s=d1, start=9, end=10, participants=participants),
     ).status_code == 200
     assert client.post(
         "/api/reservations/",
-        json=payload(date_s=d1, start=10, end=11, participants=participants_ok("501003")),
+        json=payload(date_s=d1, start=10, end=11, participants=participants),
     ).status_code == 200
 
     assert client.post(
         "/api/reservations/",
-        json=payload(date_s=d2, start=9, end=10, participants=participants_ok("501004")),
+        json=payload(date_s=d2, start=9, end=10, participants=participants),
     ).status_code == 200
 
     r = client.post(
         "/api/reservations/",
-        json=payload(date_s=d3, start=9, end=10, participants=participants_ok("501005")),
+        json=payload(date_s=d3, start=9, end=10, participants=participants),
     )
     assert r.status_code == 400
     assert "주간 최대 5시간" in r.json()["detail"]

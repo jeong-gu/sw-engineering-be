@@ -73,31 +73,35 @@ def create_reservation(
     if conflict:
         raise HTTPException(status_code=409, detail="이미 예약된 시간대입니다")
 
+    week_start, week_end = get_week_range(req.date)
     reservations = db.query(MeetingReservation).filter(
-        MeetingReservation.date >= get_week_range(req.date)[0].isoformat(),
-        MeetingReservation.date <= get_week_range(req.date)[1].isoformat(),
+        MeetingReservation.date >= week_start.isoformat(),
+        MeetingReservation.date <= week_end.isoformat(),
     ).all()
 
-    daily = 0
-    weekly = 0
-    target_date = req.date
+    for participant_id in participants:
+        daily = 0
+        weekly = 0
 
-    for r in reservations:
-        if r.date == target_date:
-            daily += r.end_time - r.start_time
-        weekly += r.end_time - r.start_time
+        for r in reservations:
+            if not r.participants or participant_id not in r.participants:
+                continue
+            hours = r.end_time - r.start_time
+            if r.date == req.date:
+                daily += hours
+            weekly += hours
 
-    if daily + duration > 2:
-        raise HTTPException(
-            status_code=400,
-            detail="회의실은 하루 최대 2시간까지 이용 가능합니다"
-        )
+        if daily + duration > 2:
+            raise HTTPException(
+                status_code=400,
+                detail=f"{participant_id}의 회의실은 하루 최대 2시간까지 이용 가능합니다"
+            )
 
-    if weekly + duration > 5:
-        raise HTTPException(
-            status_code=400,
-            detail="회의실은 주간 최대 5시간까지 이용 가능합니다"
-        )
+        if weekly + duration > 5:
+            raise HTTPException(
+                status_code=400,
+                detail=f"{participant_id}의 회의실은 주간 최대 5시간까지 이용 가능합니다"
+            )
 
     laptop_conflict = db.query(LaptopReservation).filter(
         LaptopReservation.reserver_id == reserver_id,

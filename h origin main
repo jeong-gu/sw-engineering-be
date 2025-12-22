@@ -1,0 +1,33 @@
+[33m2fd63bc[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Merge branch 'main' of https://github.com/jeong-gu/sw-engineering-be
+[33m477b21b[m fix: resolve issue where meeting room availability returned empty results
+[33m4bfdafb[m[33m ([m[1;31morigin/main[m[33m)[m Merge branch 'main' of https://github.com/jeong-gu/sw-engineering-be
+[33m4e53274[m chore: document backend build and run guide in README
+[33m1b3a0d9[m test: add laptop reservation test cases
+[33m06350ce[m Add files via upload
+[33m50e8405[m[33m ([m[1;33mtag: [m[1;33mv1.3.0[m[33m)[m feat: add 7-day booking window validation for reservations
+[33mf1ed6b3[m[33m ([m[1;33mtag: [m[1;33mv1.2.1[m[33m)[m feat: allow participants to view meeting reservations they are included in
+[33mac0f173[m feat: restrict reservation queries to the requesting user only
+[33m0b2d08b[m feat: add duplicate participant ID restriction to meeting reservations
+[33m1e6a3a3[m[33m ([m[1;33mtag: [m[1;33mv1.2.0[m[33m)[m feat: implement random laptop seat allocation API
+[33mfa4d0f2[m[33m ([m[1;33mtag: [m[1;33mv1.1.1[m[33m)[m chore: add how describe how to start server in readme.md
+[33mf32536a[m feat: add readme.md to describe how to test
+[33m2340ad8[m[33m ([m[1;33mtag: [m[1;33mv1.1.0[m[33m)[m chore: add database file to .gitignore
+[33m7879140[m feat: migrate meeting and laptop reservations from in-memory to database
+[33m4f0902b[m fix: meeting_reservation model Column fits meeting_reservation_response JSON format
+[33m22b1674[m refactor: initialize database on startup and remove unused room module
+[33m62cd0a9[m feat: apply get_db dependency for database operations
+[33m7ea9145[m refactor: remove in-memory storage for reservations
+[33m83a8c3a[m feat: initialize database tables on startup
+[33m46e26ad[m feat: add laptop reservation database model
+[33m3a3dacd[m feat: add meeting reservation database model
+[33m4787672[m refactor: remove unused Room model
+[33mcab75be[m feat: add database session and base setup
+[33m0c4afb5[m[33m ([m[1;33mtag: [m[1;33mv1.0.0[m[33m)[m feat: add DELETE APIs for meeting room and laptop seat reservations
+[33m4944549[m refactor: extract shared reservation storage to prevent overlapping bookings
+[33m5aab00a[m feat: implement laptop room seat reservation API with daily usage limit
+[33m6394b2e[m feat: enforce daily and weekly usage limits for meeting room reservations
+[33mf394c71[m feat: implement meeting room reservation creation with basic validation
+[33m7c4f59a[m feat: implement meeting room availability API based on SRS policies
+[33ma968df5[m feat: add room domain model and schemas
+[33m692cff1[m feat: initialize FASTAPI project structure
+[33md18da23[m feat: initialize FASTAPI project structure
